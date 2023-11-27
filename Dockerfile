@@ -1,5 +1,5 @@
 # check more detail on: https://hub.docker.com/r/nvidia/cuda
-FROM nvidia/cuda:10.2-devel-ubuntu18.04
+FROM nvidia/cuda:11.0.3-devel-ubuntu18.04
 LABEL maintainer="Kin Zhang <kin_eng@163.com>"
 
 # Just in case we need it
