@@ -67,3 +67,5 @@ RUN mkdir -p /root/workspace/src && mkdir -p /home/xchu/data/ramlab_dataset
 WORKDIR /root/workspace
 RUN cd src && git clone https://github.com/JokerJohn/LIO_SAM_6AXIS.git
 
+CMD ["/usr/bin/zsh"]
+
