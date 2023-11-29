@@ -3,6 +3,11 @@ FROM nvidia/cuda:11.0.3-devel-ubuntu18.04
 LABEL maintainer="Kin Zhang <kin_eng@163.com>"
 
 # Just in case we need it
+
+ENV USERNAME slam
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
 ENV DEBIAN_FRONTEND noninteractive
 
 # basic elements
@@ -18,6 +23,22 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p https://github.com/zsh-users/zsh-completions \
     -p https://github.com/zsh-users/zsh-syntax-highlighting
 
+# setup user
+RUN groupadd --gid $GROUP_ID $USERNAME && \
+    useradd --gid $GROUP_ID -m $USERNAME && \
+    echo "$USERNAME:$USERNAME" | chpasswd && \
+    usermod --shell /bin/bash $USERNAME && \
+    usermod -aG sudo $USERNAME && \
+    usermod  --uid $USER_ID $USERNAME && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME
+
+# zsh
+RUN apt install keyboard-configuration zsh zsh terminator curl git -y
+RUN chsh -s /usr/bin/zsh "$USERNAME"
+
+USER $USERNAME
+
 # ==========> INSTALL ROS melodic <=============
 RUN apt update && apt install -y curl lsb-release
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -27,6 +48,8 @@ RUN apt-get install -y libgtest-dev ros-melodic-catkin python-pip python3-pip
 
 RUN echo "source /opt/ros/melodic/setup.zsh" >> ~/.zshrc
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+
+RUN . /opt/ros/melodic/setup.sh
 
 # needs to be done before we can apply the patches
 RUN git config --global user.email "xxx@163.com"
@@ -67,5 +90,6 @@ RUN mkdir -p /root/workspace/src && mkdir -p /home/xchu/data/ramlab_dataset
 WORKDIR /root/workspace
 RUN cd src && git clone https://github.com/JokerJohn/LIO_SAM_6AXIS.git
 
+ENTRYPOINT []
 CMD ["/usr/bin/zsh"]
 
