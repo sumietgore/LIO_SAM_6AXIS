@@ -47,6 +47,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libgoogle-glog-dev \
     protobuf-compiler \
     python3-catkin-tools \
+    libgeographic-dev \
+    geographiclib-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # ======================> DEPENDENCIES <=========================
